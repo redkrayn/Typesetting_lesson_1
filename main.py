@@ -29,11 +29,11 @@ def main():
     excel_data_wine = pandas.read_excel(excel_file_path, na_values=['N/A', 'NA'], keep_default_na=False)
     wines = excel_data_wine.to_dict(orient="records")
 
-    wine_dict = defaultdict(list)
+    wine_dictionary = defaultdict(list)
+    default_category = "Без категории"
     for wine in wines:
-        category = wine.get("Категория")
-        if category:
-            wine_dict[category].append(wine)
+        category = wine.get("Категория", default_category)
+        wine_dictionary[category].append(wine)
 
     env = Environment(
         loader=FileSystemLoader('.'),
@@ -43,7 +43,7 @@ def main():
     template = env.get_template("template.html")
     rendered_page = template.render(
         how_long=f"Уже {how_long} {add_year(how_long)} с нами",
-        wine_categories=wine_dict,
+        wine_categories=wine_dictionary,
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
